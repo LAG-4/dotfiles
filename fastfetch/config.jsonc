@@ -1,0 +1,77 @@
+// ~/.config/fastfetch/config.jsonc
+
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "logo": {
+    "type": "file",
+    "source": "~/.config/fastfetch/ascii_art.txt",
+    "width": 36
+  },
+
+  "modules": [
+    "title",
+    "separator",
+    "os",
+    "host",
+    "kernel",
+    "packages",
+    "shell",
+    "de",
+    "wm",
+    "wmtheme",
+    "theme",
+    "icons",
+    "font",
+    "terminal",
+    "terminalfont",
+    "cpu",
+    "memory",
+    "localip",
+    "publicip",
+    "break",
+    "colors"
+  ],
+
+  "colors": {
+    "c1": "green",
+    "c2": "yellow",
+    "c3": "blue",
+    "c4": "magenta",
+    "c5": "cyan",
+    "c6": "white",
+    "c7": "red",
+    "c8": "brightblack",
+    "c9": "brightred",
+    "c10": "brightgreen",
+    "c11": "brightyellow",
+    "c12": "brightblue",
+    "c13": "brightmagenta",
+    "c14": "brightcyan",
+    "c15": "brightwhite"
+  },
+
+  "key": {
+    "width": 15
+  },
+
+  "padding": {
+    "left": 4
+  },
+
+  "logo-color": "c1",
+  "logo-format": "${c1}${logo}${creset}",
+  "logo-padding": {
+    "top": 0,
+    "bottom": 0,
+    "left": 0,
+    "right": 0
+  },
+
+  "separator": {
+    "string": "-",
+    "length": 40
+  },
+
+  "separator-color": "c8"
+}
