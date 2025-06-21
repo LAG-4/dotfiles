@@ -7,8 +7,8 @@ vim.g.maplocalleader = " "
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
--- [[ Setting options ]]
--- See `:help vim.o`
+-- [[ setting options ]]
+-- see `:help vim.o`
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
@@ -69,7 +69,7 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 -- Preview substitutions live, as you type!
 vim.o.inccommand = "split"
 
--- Show which line your cursor is on
+-- Show which line your cursor on
 vim.o.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
@@ -263,6 +263,9 @@ require("lazy").setup({
 				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
 				{ "<leader>g", group = "[G]it" },
 				{ "<leader>e", group = "[E]xplorer" },
+				-- ADDED: which-key groups for new plugins
+				{ "<leader>c", group = "[C]omment" },
+				{ "<leader>b", group = "[B]uffer" },
 			},
 		},
 	},
@@ -588,59 +591,32 @@ require("lazy").setup({
 			--  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
 			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
-			-- Enable the following language servers
+			-- MODIFIED: Enable the following language servers
 			--  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-			--
-			--  Add any additional override configuration in the following tables. Available keys are:
-			--  - cmd (table): Override the default command used to start the server
-			--  - filetypes (table): Override the default list of associated filetypes for the server
-			--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-			--  - settings (table): Override the default settings passed when initializing the server.
-			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
-				-- Add your desired language servers here
-				-- For your use case, you might want:
-				-- ts_ls = {},
-				-- pyright = {},
-				-- jdtls = {}, -- For Java
-
+				-- For Next.js/TypeScript, `typescript-tools.nvim` handles `tsserver`
+				pyright = {}, -- For Python
+				jdtls = {}, -- For Java
 				lua_ls = {
-					-- cmd = { ... },
-					-- filetypes = { ... },
-					-- capabilities = {},
 					settings = {
 						Lua = {
 							completion = {
 								callSnippet = "Replace",
 							},
-							-- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-							-- diagnostics = { disable = { 'missing-fields' } },
+							diagnostics = { disable = { "missing-fields" } },
 						},
 					},
 				},
 			}
 
-			-- Ensure the servers and tools above are installed
-			--
-			-- To check the current status of installed tools and/or manually install
-			-- other tools, you can run
-			--    :Mason
-			--
-			-- You can press `g?` for help in this menu.
-			--
-			-- `mason` had to be setup earlier: to configure its options see the
-			-- `dependencies` table for `nvim-lspconfig` above.
-			--
-			-- You can add other tools here that you want Mason to install
-			-- for you, so that they are available from within Neovim.
+			-- MODIFIED: Ensure the servers and tools above are installed via Mason
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, {
 				"stylua", -- Used to format Lua code
-				"typescript-language-server", -- For TypeScript and Next.js
-				"pyright", -- For Python
-				"jdtls", -- For Java
-				"prettierd", -- For formatting JS/TS
-				"eslint_d", -- For linting JS/TS
+				"prettierd", -- Used to format JS/TS/etc.
+				"black", -- Used to format Python
+				"isort", -- Used to sort imports in Python
+				"eslint_d", -- Linter for JS/TS
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -691,11 +667,14 @@ require("lazy").setup({
 					}
 				end
 			end,
+			-- MODIFIED: Formatters by Filetype
 			formatters_by_ft = {
 				lua = { "stylua" },
-				typescript = { "prettierd" },
-				javascript = { "prettierd" },
 				python = { "isort", "black" },
+				javascript = { "prettierd" },
+				typescript = { "prettierd" },
+				javascriptreact = { "prettierd" },
+				typescriptreact = { "prettierd" },
 			},
 		},
 	},
@@ -719,6 +698,7 @@ require("lazy").setup({
 					return "make install_jsregexp"
 				end)(),
 				dependencies = {
+					-- MODIFIED: Enabled friendly-snippets
 					-- `friendly-snippets` contains a variety of premade snippets.
 					--    See the README about individual language/framework/plugin snippets:
 					--    https://github.com/rafamadriz/friendly-snippets
@@ -872,14 +852,14 @@ require("lazy").setup({
 		main = "nvim-treesitter.configs", -- Sets main module to use for opts
 		-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 		opts = {
+			-- MODIFIED: Ensure more languages are installed for your dev stack
 			ensure_installed = {
 				"bash",
 				"c",
 				"diff",
 				"html",
 				"javascript",
-				"typescript",
-				"tsx",
+				"java",
 				"json",
 				"lua",
 				"luadoc",
@@ -887,9 +867,12 @@ require("lazy").setup({
 				"markdown_inline",
 				"python",
 				"query",
+				"regex",
+				"tsx",
+				"typescript",
 				"vim",
 				"vimdoc",
-				"java",
+				"yaml",
 			},
 			-- Autoinstall languages that are not installed
 			auto_install = true,
@@ -910,7 +893,7 @@ require("lazy").setup({
 		--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
 	},
 
-	-- ADDED: File Explorer
+	-- ADDED: File Explorer (neo-tree)
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		branch = "v3.x",
@@ -919,55 +902,42 @@ require("lazy").setup({
 			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
 			"MunifTanjim/nui.nvim",
 		},
-		config = function()
-			require("neo-tree").setup({
-				close_if_last_window = true, -- Close Neo-tree if it is the last window left
-				popup_border_style = "rounded",
-				enable_git_status = true,
-				enable_diagnostics = true,
-				window = {
-					position = "right",
-					width = 30,
-					mappings = {
-						["<space>"] = "none",
-						["<2-Left>"] = "close_node",
-						["<2-Right>"] = "open",
-						["<cr>"] = "open",
-						["<esc>"] = "revert_preview",
-						["P"] = { "toggle_preview", config = { use_float = true } },
-						["S"] = "open_split",
-						["s"] = "open_vsplit",
-						["t"] = "open_tabnew",
-						["w"] = "open_with_window_picker",
-						["C"] = "close_node",
-						["z"] = "close_all_nodes",
-						["a"] = "add",
-						["d"] = "delete",
-						["r"] = "rename",
-						["y"] = "copy_to_clipboard",
-						["x"] = "cut_to_clipboard",
-						["p"] = "paste_from_clipboard",
-						["c"] = "copy",
-						["m"] = "move",
-						["q"] = "close_window",
-						["R"] = "refresh",
-						["?"] = "show_help",
+		cmd = "Neotree",
+		keys = {
+			{ "<leader>e", "<cmd>Neotree toggle<CR>", desc = "Explorer NeoTree" },
+		},
+		opts = {
+			close_if_last_window = true, -- Close Neo-tree if it is the last window left
+			popup_border_style = "rounded",
+			enable_git_status = true,
+			enable_diagnostics = true,
+			default_component_configs = {
+				git_status = {
+					symbols = {
+						-- Change type
+						added = "", -- or "✚", but this is redundant info if you use git_status_colors on the name
+						modified = "", -- or "", but this is redundant info if you use git_status_colors on the name
+						deleted = "✖", -- this can only be used in the git_status source
+						renamed = "󰁕", -- this can only be used in the git_status source
+						-- Status type
+						untracked = "",
+						ignored = "",
+						unstaged = "󰄱",
+						staged = "",
+						conflict = "",
 					},
 				},
-				filesystem = {
-					filtered_items = {
-						visible = true,
-						hide_dotfiles = false,
-						hide_gitignored = true,
-					},
+			},
+			window = {
+				position = "right",
+				mappings = {
+					["<space>"] = "none",
 				},
-			})
-			vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Explorer: Toggle Neo-tree" })
-		end,
+			},
+		},
 	},
 
-	-- ADDED: Git Integration
-	-- --- ADDED: Git Management (Neogit) ---
+	-- ADDED: Git Management (Neogit)
 	{
 		"NeogitOrg/neogit",
 		dependencies = {
@@ -983,6 +953,159 @@ require("lazy").setup({
 			end, { desc = "Neogit Status" })
 		end,
 	},
+
+	-- ADDED: TypeScript Tools
+	{
+		"pmizio/typescript-tools.nvim",
+		dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+		opts = {},
+	},
+
+	-- ADDED: Auto-closing pairs (like VS Code)
+	{
+		"windwp/nvim-autopairs",
+		event = "InsertCharPre", -- Load on first character insertion
+		opts = {}, -- Use default options for simple auto-pairing
+		config = function()
+			require("nvim-autopairs").setup({})
+			-- If you use blink.cmp, you might need to enable it for cmp
+			-- MODIFIED: Corrected module path for cmp integration
+			local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+			require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
+		end,
+	},
+
+	-- ADDED: Commenting plugin (like VS Code Ctrl+/)
+	{
+		"numToStr/Comment.nvim",
+		keys = {
+			{ "gcc", mode = { "n", "v" }, desc = "Toggle line comment" },
+			{ "gc", mode = { "n", "v" }, desc = "Toggle line comment" }, -- Alias for consistency
+		},
+		opts = {},
+	},
+
+	-- ADDED: Buffer tabs
+	{
+		"akinsho/bufferline.nvim",
+		event = "VimEnter",
+		dependencies = "nvim-tree/nvim-web-devicons", -- for file icons
+		opts = {
+			options = {
+				numbers = "none", -- disable file numbers
+				separator_style = "slant", -- or "padded_slant" / "thick"
+				always_show_bufferline = true,
+				indicator = {
+					style = "underline",
+				},
+				diagnostics = "nvim_lsp", -- show LSP diagnostics
+				offsets = {
+					{
+						filetype = "neo-tree",
+						text = "File Explorer",
+						highlight = "Directory",
+						separator = true,
+					},
+				},
+			},
+		},
+		config = function()
+			require("bufferline").setup({
+				options = {
+					-- Configure bufferline options here as above
+					numbers = "ordinal", -- You can choose "none" or "buffer_id" or "ordinal"
+					-- Close buffers with <leader>bd
+					close_command = function(bufnum)
+						vim.cmd.bdelete({ bang = true, args = { bufnum } })
+					end,
+					show_close_icon = true,
+					show_buffer_close_icons = false,
+					always_show_bufferline = true,
+					diagnostics = "nvim_lsp",
+					offsets = {
+						{
+							filetype = "neo-tree",
+							text = "File Explorer",
+							highlight = "Directory",
+							separator = true,
+						},
+						{
+							filetype = "NeogitStatus",
+							text = "Git",
+							highlight = "Directory",
+							separator = true,
+						},
+					},
+				},
+			})
+			-- Keymaps for buffer navigation
+			vim.keymap.set("n", "<leader>bn", "<cmd>BufferLineCycleNext<CR>", { desc = "[B]uffer [N]ext" })
+			vim.keymap.set("n", "<leader>bp", "<cmd>BufferLineCyclePrev<CR>", { desc = "[B]uffer [P]revious" })
+			vim.keymap.set("n", "<leader>bd", "<cmd>BufferLineCloseBuffer<CR>", { desc = "[B]uffer [D]elete" })
+		end,
+	},
+
+	-- ADDED: Treesitter context (breadcrumbs-like)
+	{
+		"nvim-treesitter/nvim-treesitter-context",
+		opts = {
+			enable = true,
+			-- Adjust these to your liking
+			max_lines = 3, -- How many lines of context to show
+			min_rows = 5, -- Minimum number of screen rows needed to show context
+			line_numbers = true,
+			throttle = 150,
+			patterns = {
+				default = {
+					"class",
+					"function",
+					"method",
+					"for",
+					"while",
+					"if",
+					"switch",
+					"try",
+					"catch",
+					"import_statement", -- for JS/TS
+					"export_statement", -- for JS/TS
+				},
+			},
+		},
+	},
+
+	-- ADDED: Integrated Terminal
+	{
+		"akinsho/toggleterm.nvim",
+		version = "*",
+		cmd = "ToggleTerm",
+		keys = {
+			{
+				"<leader>ft",
+				"<cmd>ToggleTerm direction=float<cr>",
+				desc = "[F]loat [T]erminal",
+			},
+			{
+				"<leader>tt",
+				"<cmd>ToggleTerm<cr>",
+				desc = "[T]oggle [T]erminal",
+			},
+		},
+		opts = {
+			size = 20,
+			open_mapping = [[<c-\>]], -- Use Ctrl-\ to toggle
+			hide_numbers = true, -- hide the number column in toggleterm buffers
+			direction = "float", -- 'float' | 'horizontal' | 'vertical' | 'tab'
+			-- change these colors to match your theme
+			terminal_mappings = true, -- disable default mappings
+			-- Add a close_on_exit value like `true` or `false` (the default)
+			shell = vim.o.shell,
+			float_opts = {
+				border = "rounded",
+				winblend = 3,
+			},
+		},
+	},
+
 	-- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
 	-- init.lua. If you want these files, they are in the repository, so you can just download them and
 	-- place them in the correct locations.
@@ -1030,6 +1153,6 @@ require("lazy").setup({
 		},
 	},
 })
-
 -- The line beneath this is called `modeline`. See `:help modeline`
+-- -this i my nvim config for my arch linux hyprland setup, donot change anything in this, i do development in nextjs, typescript, python, java and other random programming stuff, this is my first time switching to nvim i used vs code before, donot change anything from the current config but add the file tree like it is in vs code and the github section from vs code where i can add commits see previous commits and push pull etc similarly how its done in vs code
 -- vim: ts=2 sts=2 sw=2 et
