@@ -261,6 +261,8 @@ require("lazy").setup({
 				{ "<leader>s", group = "[S]earch" },
 				{ "<leader>t", group = "[T]oggle" },
 				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
+				{ "<leader>g", group = "[G]it" },
+				{ "<leader>e", group = "[E]xplorer" },
 			},
 		},
 	},
@@ -596,18 +598,11 @@ require("lazy").setup({
 			--  - settings (table): Override the default settings passed when initializing the server.
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
-				-- clangd = {},
-				-- gopls = {},
-				-- pyright = {},
-				-- rust_analyzer = {},
-				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-				--
-				-- Some languages (like typescript) have entire language plugins that can be useful:
-				--    https://github.com/pmizio/typescript-tools.nvim
-				--
-				-- But for many setups, the LSP (`ts_ls`) will work just fine
+				-- Add your desired language servers here
+				-- For your use case, you might want:
 				-- ts_ls = {},
-				--
+				-- pyright = {},
+				-- jdtls = {}, -- For Java
 
 				lua_ls = {
 					-- cmd = { ... },
@@ -641,6 +636,11 @@ require("lazy").setup({
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, {
 				"stylua", -- Used to format Lua code
+				"typescript-language-server", -- For TypeScript and Next.js
+				"pyright", -- For Python
+				"jdtls", -- For Java
+				"prettierd", -- For formatting JS/TS
+				"eslint_d", -- For linting JS/TS
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -693,11 +693,9 @@ require("lazy").setup({
 			end,
 			formatters_by_ft = {
 				lua = { "stylua" },
-				-- Conform can also run multiple formatters sequentially
-				-- python = { "isort", "black" },
-				--
-				-- You can use 'stop_after_first' to run the first available formatter from the list
-				-- javascript = { "prettierd", "prettier", stop_after_first = true },
+				typescript = { "prettierd" },
+				javascript = { "prettierd" },
+				python = { "isort", "black" },
 			},
 		},
 	},
@@ -724,12 +722,12 @@ require("lazy").setup({
 					-- `friendly-snippets` contains a variety of premade snippets.
 					--    See the README about individual language/framework/plugin snippets:
 					--    https://github.com/rafamadriz/friendly-snippets
-					-- {
-					--   'rafamadriz/friendly-snippets',
-					--   config = function()
-					--     require('luasnip.loaders.from_vscode').lazy_load()
-					--   end,
-					-- },
+					{
+						"rafamadriz/friendly-snippets",
+						config = function()
+							require("luasnip.loaders.from_vscode").lazy_load()
+						end,
+					},
 				},
 				opts = {},
 			},
@@ -879,13 +877,19 @@ require("lazy").setup({
 				"c",
 				"diff",
 				"html",
+				"javascript",
+				"typescript",
+				"tsx",
+				"json",
 				"lua",
 				"luadoc",
 				"markdown",
 				"markdown_inline",
+				"python",
 				"query",
 				"vim",
 				"vimdoc",
+				"java",
 			},
 			-- Autoinstall languages that are not installed
 			auto_install = true,
@@ -906,6 +910,79 @@ require("lazy").setup({
 		--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
 	},
 
+	-- ADDED: File Explorer
+	{
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+			"MunifTanjim/nui.nvim",
+		},
+		config = function()
+			require("neo-tree").setup({
+				close_if_last_window = true, -- Close Neo-tree if it is the last window left
+				popup_border_style = "rounded",
+				enable_git_status = true,
+				enable_diagnostics = true,
+				window = {
+					position = "right",
+					width = 30,
+					mappings = {
+						["<space>"] = "none",
+						["<2-Left>"] = "close_node",
+						["<2-Right>"] = "open",
+						["<cr>"] = "open",
+						["<esc>"] = "revert_preview",
+						["P"] = { "toggle_preview", config = { use_float = true } },
+						["S"] = "open_split",
+						["s"] = "open_vsplit",
+						["t"] = "open_tabnew",
+						["w"] = "open_with_window_picker",
+						["C"] = "close_node",
+						["z"] = "close_all_nodes",
+						["a"] = "add",
+						["d"] = "delete",
+						["r"] = "rename",
+						["y"] = "copy_to_clipboard",
+						["x"] = "cut_to_clipboard",
+						["p"] = "paste_from_clipboard",
+						["c"] = "copy",
+						["m"] = "move",
+						["q"] = "close_window",
+						["R"] = "refresh",
+						["?"] = "show_help",
+					},
+				},
+				filesystem = {
+					filtered_items = {
+						visible = true,
+						hide_dotfiles = false,
+						hide_gitignored = true,
+					},
+				},
+			})
+			vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Explorer: Toggle Neo-tree" })
+		end,
+	},
+
+	-- ADDED: Git Integration
+	-- --- ADDED: Git Management (Neogit) ---
+	{
+		"NeogitOrg/neogit",
+		dependencies = {
+			"nvim-lua/plenary.nvim", -- required
+			"sindrets/diffview.nvim", -- optional - Diff integration
+		},
+		-- We use config = function() to ensure the plugin is fully loaded and configured
+		config = function()
+			require("neogit").setup({})
+			-- Now we create the keymap after the plugin is set up
+			vim.keymap.set("n", "<leader>gg", function()
+				require("neogit").open()
+			end, { desc = "Neogit Status" })
+		end,
+	},
 	-- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
 	-- init.lua. If you want these files, they are in the repository, so you can just download them and
 	-- place them in the correct locations.
