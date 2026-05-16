@@ -10,7 +10,7 @@ return {
     event = "VeryLazy",
     keys = {
       {
-        "<C-S-a>",
+        "<C-A>",
         function()
           require("opencode.terminal").toggle("opencode --port", {
             split = "right",

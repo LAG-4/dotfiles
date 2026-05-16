@@ -20,13 +20,6 @@ map("n", "<C-b>", function()
   require("snacks").terminal.toggle()
 end, { desc = "Toggle terminal" })
 map("t", "<C-b>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-map("n", "<C-S-a>", function()
-  require("opencode.terminal").toggle("opencode --port", {
-    split = "right",
-    width = math.floor(vim.o.columns * 0.35),
-  })
-end, { desc = "Toggle opencode sidebar" })
-map("t", "<C-S-a>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 map("n", "<C-S-p>", "<cmd>Telescope commands<cr>", { desc = "Command palette" })
 map("n", "<C-Shift-P>", "<cmd>Telescope commands<cr>", { desc = "Command palette" })
 map("n", "<leader>ff", function()
