@@ -77,7 +77,7 @@ return {
     event = "VeryLazy",
     keys = {
       {
-        "<C-`>",
+        "<C-S-a>",
         function()
           toggle_sidebar()
         end,

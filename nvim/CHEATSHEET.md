@@ -22,7 +22,7 @@ nvim <file>             # Open specific file
 | `Ctrl+Shift+F` | Find in files (grep) |
 | `Ctrl+Shift+E` | Find in git files |
 | `Ctrl+B` | Toggle terminal |
-| `Ctrl+`` ` | Toggle opencode sidebar |
+| `Ctrl+Shift+A` | Toggle opencode sidebar |
 | `Ctrl+Shift+P` | Command palette |
 | `Leader+e` or `Leader+-` | Open file explorer (Oil.nvim) |
 
@@ -58,7 +58,7 @@ nvim <file>             # Open specific file
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl+`` ` | **Toggle opencode sidebar** (like Cursor) |
+| `Ctrl+Shift+A` | **Toggle opencode sidebar** (like Cursor) |
 | `Leader+oa` | Ask opencode (popup prompt) |
 | `Leader+os` | Select opencode action (preset prompts) |
 | `Leader+ot` | Toggle opencode sidebar |
