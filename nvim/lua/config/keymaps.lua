@@ -21,7 +21,10 @@ map("n", "<C-b>", function()
 end, { desc = "Toggle terminal" })
 map("t", "<C-b>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 map("n", "<C-S-a>", function()
-  require("opencode").toggle()
+  require("opencode.terminal").toggle("opencode --port", {
+    split = "right",
+    width = math.floor(vim.o.columns * 0.35),
+  })
 end, { desc = "Toggle opencode sidebar" })
 map("t", "<C-S-a>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 map("n", "<C-S-p>", "<cmd>Telescope commands<cr>", { desc = "Command palette" })
