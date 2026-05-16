@@ -22,7 +22,7 @@ nvim <file>             # Open specific file
 | `Ctrl+Shift+F` | Find in files (grep) |
 | `Ctrl+Shift+E` | Find in git files |
 | `Ctrl+B` | Toggle terminal |
-| `Ctrl+Shift+A` | Toggle opencode sidebar |
+| `Ctrl+A` | Ask opencode AI |
 | `Ctrl+Shift+P` | Command palette |
 | `Leader+e` or `Leader+-` | Open file explorer (Oil.nvim) |
 
@@ -54,11 +54,11 @@ nvim <file>             # Open specific file
 | `Leader+af` | Format file |
 | `Leader+as` | Signature help |
 
-## 🤖 Opencode AI Assistant (Sidebar)
+## 🤖 Opencode AI Assistant
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl+Shift+A` | **Toggle opencode sidebar** (like Cursor) |
+| `Ctrl+A` | **Ask opencode** (popup prompt) |
 | `Leader+oa` | Ask opencode (popup prompt) |
 | `Leader+os` | Select opencode action (preset prompts) |
 | `Leader+ot` | Toggle opencode sidebar |

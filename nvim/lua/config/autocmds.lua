@@ -77,15 +77,6 @@ autocmd("TermOpen", {
   end,
 })
 
-autocmd("BufEnter", {
-  group = terminal_group,
-  callback = function()
-    if vim.bo.filetype == "opencode_sidebar" or vim.b.terminal_job_id then
-      vim.cmd("startinsert")
-    end
-  end,
-})
-
 local checkhealth_group = augroup("CheckHealth", { clear = true })
 autocmd("VimEnter", {
   group = checkhealth_group,
